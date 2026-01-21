@@ -1,0 +1,28 @@
+/*by mschro67*/
+
+a{
+    color:#FFF;
+    text-decoration:underline #FFF;
+}
+a:hover{
+    font-weight:bold;
+}
+
+nav{
+    position:fixed;
+    bottom:5px;
+    left:5px;
+    background-color:#764ba2;
+    z-index:10;
+    padding:2px 5px 2px 5px;
+    width:18%;
+    height:10%;
+    border:solid #FFF;
+    border-radius:15px;
+    flex-direction:column;
+    gap:5px;
+}
+
+.nav-btn{
+    padding:0px 2px;
+}

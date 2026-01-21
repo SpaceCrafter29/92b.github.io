@@ -1,3 +1,5 @@
+/*by ai*/
+
 * {
     margin: 0;
     padding: 0;
@@ -180,9 +182,4 @@ footer {
         margin: 1rem;
         padding: 1.5rem;
     }
-}
-
-a{
-    color:#FFF;
-    text-decoration:underline #FFF;
 }

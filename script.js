@@ -1,3 +1,5 @@
+//by ai
+
 // Initialize 3D scene with Three.js
 function init3DScene() {
     const canvas = document.getElementById('three-canvas');
