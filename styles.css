@@ -181,3 +181,8 @@ footer {
         padding: 1.5rem;
     }
 }
+
+a{
+    color:#FFF;
+    text-decoration:underline #FFF;
+}
