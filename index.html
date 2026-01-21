@@ -30,7 +30,7 @@
         </section>
 
         <!-- Drawings Section -->
-        <section id="drawings" class="content-section">
+        <section hidden id="drawings" class="content-section">
             <h2>Drawings & Artwork</h2>
             <div class="gallery">
                 <!-- Images will be loaded dynamically -->
@@ -59,7 +59,7 @@
         <script>
             //by mschro67
             let current="models"
-            function showSection(selected){document.getElementById(selected).toggleAttribute("hidden")}
+            function showSection(selected){document.getElementById("models").toggleAttribute("hidden");getElementById("models").toggleAttribute("hidden")}
         </script>
     </body>
 </html>
