@@ -1,60 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="mschro67">
-    <title>3D Models & Drawings</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="maxi_styling.css">
-</head>
-<body>
-    <header>
-        <h1>3D Models & Drawings</h1>
-        <p>A showcase of my creative works</p>
-    </header>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="mschro67">
+        <title>3D Models & Drawings</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="maxi_styling.css">
+    </head>
+    <body>
+        <header>
+            <h1>3D Models & Drawings</h1>
+            <p>A showcase of my creative works</p>
+        </header>
 
-    <!-- 3D Models Section -->
-    <section id="models" class="content-section">
-        <h2>3D Models</h2>
-        <div class="gallery">
-            <div class="model-card">
-                <div id="three-canvas"></div>
-                <h3>Sample 3D Model</h3>
-                <p>A rotating cube demonstration</p>
+        <!-- 3D Models Section -->
+        <section id="models" class="content-section">
+            <h2>3D Models</h2>
+            <div class="gallery">
+                <div class="model-card">
+                    <div id="three-canvas"></div>
+                    <h3>Sample 3D Model</h3>
+                    <p>A rotating cube demonstration</p>
+                </div>
+                <!-- Add more model cards as needed -->
             </div>
-            <!-- Add more model cards as needed -->
-        </div>
-        <p class="instruction" hidden>To add your 3D models, place .gltf, .glb, or .obj files in the <code>models/</code> folder</p>
-    </section>
+            <p class="instruction" hidden>To add your 3D models, place .gltf, .glb, or .obj files in the <code>models/</code> folder</p>
+        </section>
 
-    <!-- Drawings Section -->
-    <section id="drawings" class="content-section">
-        <h2>Drawings & Artwork</h2>
-        <div class="gallery">
-            <!-- Images will be loaded dynamically -->
-            <div id="drawings-container" class="drawings-grid">
-                <!-- Sample drawing card -->
-                <div class="drawing-card">
-                    <img src="drawings/sample.jpg" alt="Sample Drawing" onerror="this.src='images/placeholder.svg'">
-                    <h3>Sample Artwork</h3>
+        <!-- Drawings Section -->
+        <section id="drawings" class="content-section">
+            <h2>Drawings & Artwork</h2>
+            <div class="gallery">
+                <!-- Images will be loaded dynamically -->
+                <div id="drawings-container" class="drawings-grid">
+                    <!-- Sample drawing card -->
+                    <div class="drawing-card">
+                        <img src="drawings/sample.jpg" alt="Sample Drawing" onerror="this.src='images/placeholder.svg'">
+                        <h3>Sample Artwork</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-        <p hidden class="instruction">Add your drawing images (.jpg, .png) to the <code>drawings/</code> folder</p>
-    </section>
+            <p hidden class="instruction">Add your drawing images (.jpg, .png) to the <code>drawings/</code> folder</p>
+        </section>
 
-    <footer>
-        <p>&copy; 2026 <a href="https://github.com/spacecrafter29" target="_blank">SpaceCrafter29</a> and <a href="https://mschro67.github.io" target="_blank">mschro67</a>. All rights reserved.</p>
-    </footer>
+        <footer>
+            <p>&copy; 2026 <a href="https://github.com/spacecrafter29" target="_blank">SpaceCrafter29</a> and <a href="https://mschro67.github.io" target="_blank">mschro67</a>. All rights reserved.</p>
+        </footer>
 
-    <nav>
-        <button class="nav-btn" onclick="showSection('models')">3D Models</button>
-        <button class="nav-btn" onclick="showSection('drawings')">Drawings</button>
-    </nav>
+        <nav>
+            <button class="nav-btn" onclick="showSection('models')">3D Models</button>
+            <button class="nav-btn" onclick="showSection('drawings')">Drawings</button>
+        </nav>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="/script.js"></script>
-    <script src="/sections.js"></script>
-</body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="/script.js"></script>
+        <script>
+            //by mschro67
+            let current="models"
+            function showSection(selected){document.getElementById(selected).toggleAttribute("hidden")}
+        </script>
+    </body>
 </html>
