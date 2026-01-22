@@ -50,15 +50,21 @@
         </footer>
 
         <nav>
-            <button class="nav-btn" onclick="showSection('models')">3D Models</button>
-            <button class="nav-btn" onclick="showSection('drawings')">Drawings</button>
+            <button class="nav-btn" onclick="hideSection('drawings')">3D Models</button>
+            <button class="nav-btn" onclick="hideSection('models')">Drawings</button>
         </nav>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
         <script src="/script.js"></script>
         <script>
             //by mschro67
-            function showSection(selected){document.getElementById("models").setAttribute("hidden","true");document.getElementById("drawings").setattrubute("hidden","true");document.getElementById(selected).setattrubute("hidden","false")}
+            const models = document.getElementById("models");
+            const drawings = document.getElementById("drawings");
+            function hideSection(selected){
+                models.removeAttribute("hidden")
+                drawings.removeAttribute("hidden");
+                document.getElementById(selected).toggleAttribute("hidden")
+            }
         </script>
     </body>
 </html>
