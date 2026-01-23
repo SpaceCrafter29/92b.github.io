@@ -29,3 +29,7 @@ function show(selected){
         behavior: 'smooth'
     });
 }
+
+function select(number){
+    show(document.getElementById("select"+number).value);
+}
