@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 
 <html>
+    <style>
+        body{
+            text-align:center;
+        }
+        div{
+            position:absolute;
+            left:25%;
+            top:0%;
+        }
+        section{
+            font-weight:bold;
+        }
+    </style>
     <body>
         <h1>Demo</h1>
 
@@ -32,17 +45,20 @@
             ...
         </details>
 
-        <h2>Output</h2>
+        <div>
+            <h2>Output</h2>
+            <section id="A">A</section>
+            <section id="B">B</section>
+            <section id="C">C</section>
 
-        <section id="A">A</section>
-        <section id="B">B</section>
-        <section id="C">C</section>
+            <details>
+                <summary>HTML</summary>
+                &lt;section id="A"&gt;A&lt;/section&gt;<br>
+                ...
+            </details>
+        </div>
 
-        <details>
-            <summary>HTML</summary>
-            &lt;section id="A"&gt;A&lt;/section&gt;<br>
-            ...
-        </details>
+        <a href="/sections.js">JavaScript</a>
 
         <script src="/sections.js"></script>
     </body>
