@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="mschro67">
         <title>3D Models & Drawings</title>
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="ai_styling.css">
         <link rel="stylesheet" href="maxi_styling.css">
     </head>
     <body>
@@ -50,22 +50,12 @@
         </footer>
 
         <nav>
-            <button class="nav-btn" onclick="hideSection('drawings')">3D Models</button>
-            <button class="nav-btn" onclick="hideSection('models')">Drawings</button>
+            <button class="nav-btn" onclick="show('models')">3D Models</button>
+            <button class="nav-btn" onclick="show('drawings')">Drawings</button>
         </nav>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-        <script src="/script.js"></script>
-        <script>
-            //by mschro67
-            //last change: Jan 22 2026
-            const models = document.getElementById("models");
-            const drawings = document.getElementById("drawings");
-            function hideSection(selected){
-                models.removeAttribute("hidden")
-                drawings.removeAttribute("hidden");
-                document.getElementById(selected).toggleAttribute("hidden")
-            }
-        </script>
+        <script src="/ai_script,js"></script>
+        <script src="/sections.js"></script>
     </body>
 </html>
