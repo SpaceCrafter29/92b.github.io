@@ -9,7 +9,7 @@ Funktion, ein Video als Hintergrundbild zu setzen. Diese App rüstet sie über d
 
 ## Installieren
 
-1. **[VideoWall.apk herunterladen](https://github.com/SpaceCrafter29/92b.github.io/releases/latest/download/VideoWall.apk)** — direkt auf dem Handy öffnen.
+1. **[VideoWall.apk herunterladen](https://github.com/SpaceCrafter29/92b.github.io/releases/download/latest/VideoWall.apk)** — direkt auf dem Handy öffnen.
 2. Android fragt einmalig, ob Apps aus dieser Quelle installiert werden dürfen → erlauben.
 3. App öffnen, **Video auswählen**, dann **Als Hintergrund festlegen**.
 

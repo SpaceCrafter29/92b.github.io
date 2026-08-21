@@ -48,7 +48,9 @@ jobs:
           if-no-files-found: error
 
       # Feste Download-Adresse, die sich direkt auf dem Handy oeffnen laesst:
-      # https://github.com/SpaceCrafter29/92b.github.io/releases/latest/download/VideoWall.apk
+      # https://github.com/SpaceCrafter29/92b.github.io/releases/download/latest/VideoWall.apk
+      # Wichtig: NICHT als --prerelease anlegen. GitHub uebergeht Prereleases bei
+      # /releases/latest/ und liefert dort dann 404.
       - name: Release "latest" aktualisieren
         if: github.event_name != 'pull_request'
         env:
@@ -63,5 +65,4 @@ jobs:
           Android fragt einmalig nach der Erlaubnis, Apps aus dieser Quelle zu installieren.
 
           Das ist ein Debug-Build und daher mit dem Standard-Debug-Schluessel signiert." \
-            --prerelease \
             --target "${GITHUB_SHA}"
