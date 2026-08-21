@@ -1,0 +1,67 @@
+name: APK bauen
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JDK 17 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK einrichten
+        uses: android-actions/setup-android@v3
+
+      - name: Gradle einrichten
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: APK bauen
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
+
+      - name: APK umbenennen
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/VideoWall.apk
+          ls -lh dist
+
+      - name: APK als Workflow-Artefakt ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: VideoWall-apk
+          path: dist/VideoWall.apk
+          if-no-files-found: error
+
+      # Feste Download-Adresse, die sich direkt auf dem Handy oeffnen laesst:
+      # https://github.com/SpaceCrafter29/92b.github.io/releases/latest/download/VideoWall.apk
+      - name: Release "latest" aktualisieren
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest dist/VideoWall.apk \
+            --title "VideoWall (aktueller Build)" \
+            --notes "Automatisch gebaut aus \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}).
+
+          Zum Installieren die Datei \`VideoWall.apk\` auf dem Handy herunterladen und oeffnen.
+          Android fragt einmalig nach der Erlaubnis, Apps aus dieser Quelle zu installieren.
+
+          Das ist ein Debug-Build und daher mit dem Standard-Debug-Schluessel signiert." \
+            --prerelease \
+            --target "${GITHUB_SHA}"

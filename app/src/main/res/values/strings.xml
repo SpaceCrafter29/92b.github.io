@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VideoWall</string>
+    <string name="wallpaper_label">VideoWall</string>
+    <string name="wallpaper_description">Spielt ein selbst gewaehltes Video als Live-Hintergrund ab.</string>
+
+    <string name="section_video">Video</string>
+    <string name="section_look">Darstellung</string>
+    <string name="section_playback">Wiedergabe</string>
+
+    <string name="no_video_selected">Noch kein Video ausgewaehlt</string>
+    <string name="no_video_hint">Waehle ein Video aus deiner Galerie oder deinen Dateien. Es bleibt dort liegen und wird nicht kopiert.</string>
+    <string name="pick_video">Video auswaehlen</string>
+    <string name="change_video">Anderes Video</string>
+
+    <string name="scale_mode">Bildschirm fuellen</string>
+    <string name="scale_mode_desc">An: Video wird zugeschnitten, keine Balken. Aus: Video wird komplett eingepasst, mit schwarzen Balken.</string>
+
+    <string name="brightness">Helligkeit</string>
+    <string name="brightness_desc">Dunkler gestellt bleiben App-Symbole und Widgets besser lesbar.</string>
+
+    <string name="parallax">Parallax-Effekt</string>
+    <string name="parallax_desc">Video bewegt sich mit, wenn du zwischen Startbildschirm-Seiten wischst. Wirkt nur beim Zuschneiden.</string>
+
+    <string name="speed">Geschwindigkeit</string>
+
+    <string name="sound">Ton abspielen</string>
+    <string name="sound_desc">Standardmaessig stumm. Ton im Hintergrund kostet spuerbar Akku.</string>
+
+    <string name="apply_wallpaper">Als Hintergrund festlegen</string>
+
+    <string name="battery_note">Die Wiedergabe pausiert automatisch, sobald der Bildschirm aus ist oder eine App im Vordergrund laeuft.</string>
+
+    <string name="toast_no_video">Bitte zuerst ein Video auswaehlen.</string>
+    <string name="toast_no_picker">Keine App zum Auswaehlen von Videos gefunden.</string>
+    <string name="toast_no_chooser">Live-Hintergrund-Auswahl konnte nicht geoeffnet werden.</string>
+    <string name="toast_permission_temporary">Dauerhafter Zugriff auf dieses Video war nicht moeglich. Nach einem Neustart musst du es eventuell neu auswaehlen.</string>
+    <string name="toast_unreadable">Dieses Video kann nicht gelesen werden. Bitte ein anderes waehlen.</string>
+
+    <string name="loading">Wird geladen…</string>
+    <string name="brightness_value">Helligkeit · %1$d %%</string>
+    <string name="speed_value">Geschwindigkeit · %1$s×</string>
+    <string name="video_meta">%1$d × %2$d · %3$s</string>
+</resources>
