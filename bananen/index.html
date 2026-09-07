@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="SpaceCrafter29">
+<meta name="description" content="Ein scroll-getriebenes 3D-Schaufenster für Bananen: Sorten fliegen von links und rechts herein, ein Sortierband fährt seitwärts, der Reifegrad läuft von 1 bis 7.">
+<meta name="theme-color" content="#17120c">
+<title>Krumme Dinger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;600;800&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="stylesheet" href="bananen.css">
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="nana" viewBox="0 0 100 100">
+    <path class="n-body" d="M24 8 C16 44 30 78 66 88 C78 91 90 88 93 81 C92 77 88 74 84 73 C56 66 40 44 38 10 C34 5 27 4 24 8 Z" fill="currentColor"/>
+    <path class="n-hi" d="M31 18 C27 46 36 68 58 79" fill="none" stroke="#fff6c2" stroke-width="4.5" stroke-linecap="round" opacity=".5"/>
+    <g class="n-spots" style="opacity:var(--spot,0)" fill="#5c3110">
+      <ellipse cx="31" cy="21" rx="2.4" ry="3"/>
+      <ellipse cx="32" cy="35" rx="3.2" ry="4.2"/>
+      <ellipse cx="39" cy="52" rx="3.8" ry="4.4"/>
+      <ellipse cx="50" cy="66" rx="4.2" ry="3.6"/>
+      <ellipse cx="63" cy="77" rx="3" ry="2.4"/>
+    </g>
+    <path class="n-tip" d="M84 73 C88 74 92 77 93 81 C90 88 82 90 76 87 C79 80 81 76 84 73 Z" fill="#4a2a10"/>
+    <path class="n-stem" d="M24 8 C22 2 27 -1 32 1 C37 3 38 7 38 12 C33 11 28 10 24 8 Z" fill="#6b4318"/>
+  </symbol>
+</svg>
+
+<div class="hud">
+  <p class="hud-mark">92b <span>·</span> Obstabteilung</p>
+  <div class="hud-ctrl">
+    <button type="button" id="turbo" class="btn" aria-pressed="false">Turbo</button>
+    <button type="button" id="ruhe" class="btn" aria-pressed="false">Ruhe</button>
+  </div>
+</div>
+
+<div class="tape" aria-hidden="true">
+  <div class="tape-fill" id="tapeFill"></div>
+  <svg class="tape-rider nana" id="tapeRider"><use href="#nana"/></svg>
+</div>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <p class="eyebrow">Musa acuminata &nbsp;·&nbsp; Klasse Extra &nbsp;·&nbsp; Partie 92B</p>
+    <h1 class="title" data-txt="Krumme Dinger">Krumme Dinger</h1>
+    <p class="lede">Ein Schaufenster in drei Dimensionen. Du scrollst — die Ware kommt von links,
+      von rechts und irgendwann direkt auf dich zu. Sechs Sorten, acht Prüfstücke, sieben Reifestufen.</p>
+    <p class="hint"><span class="hint-arrow" aria-hidden="true">↓</span> Runterscrollen. Schnell scrollen wackelt mehr.</p>
+  </div>
+  <div class="hero-fruit" id="heroFruit">
+    <svg class="nana hero-nana" id="heroNana" aria-hidden="true"><use href="#nana"/></svg>
+    <div class="sticker" aria-hidden="true">
+      <span class="sticker-top">Handelsklasse</span>
+      <span class="sticker-big">EXTRA</span>
+      <span class="sticker-bot">92b · Kaliber 43 mm</span>
+    </div>
+  </div>
+</header>
+
+<div class="mq" aria-hidden="true">
+  <div class="mq-inner" data-mq="1" data-dir="-1"></div>
+</div>
+
+<!-- ============ 1 · ANLIEFERUNG ============ -->
+<section class="tunnel" id="anlieferung" aria-labelledby="h-anlieferung">
+  <div class="tunnel-stage">
+    <div class="tunnel-space" id="crates" aria-hidden="true"></div>
+    <div class="tunnel-copy">
+      <p class="kicker">Station 01</p>
+      <h2 id="h-anlieferung">Anlieferung</h2>
+      <p>Ein Reeferschiff bringt sie bei 13,5&nbsp;°C über den Atlantik, noch tiefgrün und
+        stur unreif. Was hier auf dich zufliegt, ist der Standardkarton: 18,14&nbsp;kg,
+        weltweit dasselbe Maß, seit Jahrzehnten unverändert.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · SICHTUNG (links / rechts) ============ -->
+<section class="sichtung" id="sichtung" aria-labelledby="h-sichtung">
+  <div class="section-head">
+    <p class="kicker">Station 02</p>
+    <h2 id="h-sichtung">Sichtung</h2>
+    <p>Fünf Sorten schwenken herein — abwechselnd von links und von rechts, wie am Prüftisch.</p>
+  </div>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><svg class="nana" style="color:#ffd21e" aria-hidden="true"><use href="#nana"/></svg></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Weltmeister</p>
+      <h3>Cavendish</h3>
+      <p>Benannt nach William Cavendish, 6. Duke of Devonshire, in dessen Gewächshaus in Chatsworth
+        sie in den 1830ern gezogen wurde. Heute steckt in fast jedem Exportkarton derselbe Klon —
+        eine Sorte ohne genetische Reserve.</p>
+      <dl class="spec">
+        <div><dt>Bogenlänge</dt><dd>18–22 cm</dd></div>
+        <div><dt>Kaliber</dt><dd>39–46 mm</dd></div>
+        <div><dt>Zucker reif</dt><dd>18–22 °Brix</dd></div>
+        <div><dt>Status</dt><dd class="warn">bedroht durch TR4</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="right">
+    <div class="panel-art"><svg class="nana" style="color:#e8b62c" aria-hidden="true"><use href="#nana"/></svg></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der abgesetzte König</p>
+      <h3>Gros Michel</h3>
+      <p>Bis in die 1950er die Exportbanane schlechthin: dicker, aromatischer, transportfester.
+        Dann räumte die Panama-Krankheit die Plantagen leer. Das künstliche Bananenaroma
+        (Isoamylacetat) wurde nach ihr abgeschmeckt — deshalb schmeckt Bananenbrause
+        nicht nach dem, was heute im Regal liegt.</p>
+      <dl class="spec">
+        <div><dt>Bogenlänge</dt><dd>15–20 cm</dd></div>
+        <div><dt>Schale</dt><dd>dick, reisefest</dd></div>
+        <div><dt>Verdrängt</dt><dd>ab 1950er</dd></div>
+        <div><dt>Status</dt><dd>Nischenanbau</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><svg class="nana" style="color:#9fc6c9" aria-hidden="true"><use href="#nana"/></svg></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Die Eiscremebanane</p>
+      <h3>Blaue Java</h3>
+      <p>Unreif liegt ein silbrig-blauer Wachsfilm auf der Schale. Das Fruchtfleisch ist
+        cremig bis flaumig und schmeckt in Richtung Vanillepudding. Robuster als der Rest:
+        sie steckt kurze Fröste weg, die eine Cavendish sofort erledigen.</p>
+      <dl class="spec">
+        <div><dt>Schale unreif</dt><dd>silberblau</dd></div>
+        <div><dt>Textur</dt><dd>cremig, flaumig</dd></div>
+        <div><dt>Aroma</dt><dd>Vanille</dd></div>
+        <div><dt>Frosthart</dt><dd>bis ca. −2 °C</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="right">
+    <div class="panel-art"><svg class="nana" style="color:#c8d24a" aria-hidden="true"><use href="#nana"/></svg></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Die Herzhafte</p>
+      <h3>Kochbanane</h3>
+      <p>Stärke statt Zucker: roh zäh und mehlig, gekocht, gebraten oder frittiert ein
+        Grundnahrungsmittel. In Uganda wird sie als Matoke gedämpft und gestampft — dort zählt
+        sie nicht als Obst, sondern als Sättigungsbeilage.</p>
+      <dl class="spec">
+        <div><dt>Stärke roh</dt><dd>bis ~ 30 %</dd></div>
+        <div><dt>Zubereitung</dt><dd>gekocht, frittiert</dd></div>
+        <div><dt>Bogenlänge</dt><dd>25–35 cm</dd></div>
+        <div><dt>Rolle</dt><dd>Grundnahrungsmittel</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><svg class="nana" style="color:#c4472f" aria-hidden="true"><use href="#nana"/></svg></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Die Rote</p>
+      <h3>Rote Dacca</h3>
+      <p>Kürzere, dickere Finger in Rotviolett. Mehr Carotinoide als die gelbe Verwandtschaft,
+        weicheres Fleisch, süßer im Abgang — und deutlich empfindlicher beim Transport,
+        weshalb sie fast nie im Supermarkt landet.</p>
+      <dl class="spec">
+        <div><dt>Schale</dt><dd>rotviolett</dd></div>
+        <div><dt>Bogenlänge</dt><dd>12–16 cm</dd></div>
+        <div><dt>Carotinoide</dt><dd>erhöht</dd></div>
+        <div><dt>Handel</dt><dd>selten, empfindlich</dd></div>
+      </dl>
+    </div>
+  </article>
+</section>
+
+<div class="mq mq-b" aria-hidden="true">
+  <div class="mq-inner" data-mq="2" data-dir="1"></div>
+</div>
+
+<!-- ============ 3 · SORTIERBAND (horizontal) ============ -->
+<section class="belt" id="sortierband" aria-labelledby="h-belt">
+  <div class="belt-stage">
+    <div class="belt-head">
+      <p class="kicker">Station 03</p>
+      <h2 id="h-belt">Sortierband</h2>
+      <p>Ab hier scrollst du weiter nach unten — die Ware fährt trotzdem seitwärts an dir vorbei.
+        Gemessen wird nach EU-Norm: Kaliber am mittleren Finger, Bogenlänge an der Außenkante.</p>
+    </div>
+
+    <div class="belt-viewport">
+      <div class="belt-track" id="beltTrack">
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 01</p><svg class="nana" style="color:#ffd21e" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>42 mm</dd></div><div><dt>Bogen</dt><dd>21,5 cm</dd></div><div><dt>Krümmung</dt><dd>34°</dd></div></dl><p class="sc-k k-x">Klasse Extra</p><p class="sc-b">makellos, Titelverdacht</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 02</p><svg class="nana" style="color:#f4c81f" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>39 mm</dd></div><div><dt>Bogen</dt><dd>19,0 cm</dd></div><div><dt>Krümmung</dt><dd>28°</dd></div></dl><p class="sc-k k-1">Klasse I</p><p class="sc-b">leichte Schalenfehler</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 03</p><svg class="nana" style="color:#ffdc3a" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>46 mm</dd></div><div><dt>Bogen</dt><dd>24,0 cm</dd></div><div><dt>Krümmung</dt><dd>41°</dd></div></dl><p class="sc-k k-x">Klasse Extra</p><p class="sc-b">Prachtstück der Partie</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 04</p><svg class="nana" style="color:#e9c22a" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>37 mm</dd></div><div><dt>Bogen</dt><dd>17,5 cm</dd></div><div><dt>Krümmung</dt><dd>9°</dd></div></dl><p class="sc-k k-2">Klasse II</p><p class="sc-b">verdächtig gerade</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 05</p><svg class="nana" style="color:#ffd21e" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>44 mm</dd></div><div><dt>Bogen</dt><dd>22,0 cm</dd></div><div><dt>Krümmung</dt><dd>36°</dd></div></dl><p class="sc-k k-1">Klasse I</p><p class="sc-b">Druckstelle am Bauch</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 06</p><svg class="nana" style="color:#f8d02b" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>41 mm</dd></div><div><dt>Bogen</dt><dd>20,5 cm</dd></div><div><dt>Krümmung</dt><dd>31°</dd></div></dl><p class="sc-k k-x">Klasse Extra</p><p class="sc-b">Lehrbuchkrümmung</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 07</p><svg class="nana" style="color:#cbd44e" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>26 mm</dd></div><div><dt>Bogen</dt><dd>13,0 cm</dd></div><div><dt>Krümmung</dt><dd>22°</dd></div></dl><p class="sc-k k-out">aussortiert</p><p class="sc-b">unter Mindestmaß</p></article>
+        <article class="spec-card" data-tilt><p class="sc-no">Prüfstück 08</p><svg class="nana" style="color:#ffe152" aria-hidden="true"><use href="#nana"/></svg><dl class="sc-d"><div><dt>Kaliber</dt><dd>43 mm</dd></div><div><dt>Bogen</dt><dd>21,0 cm</dd></div><div><dt>Krümmung</dt><dd>38°</dd></div></dl><p class="sc-k k-x">Klasse Extra</p><p class="sc-b">geht aufs Etikett</p></article>
+      </div>
+      <div class="ruler" id="ruler" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · REIFEGRAD ============ -->
+<section class="ripen" id="reifegrad" aria-labelledby="h-ripen">
+  <div class="ripen-stage">
+    <div class="ripen-art">
+      <svg class="nana ripen-nana" id="ripenNana" aria-hidden="true"><use href="#nana"/></svg>
+      <div class="ripen-scale" id="ripenScale" aria-hidden="true"></div>
+    </div>
+    <div class="ripen-copy">
+      <p class="kicker">Station 04</p>
+      <h2 id="h-ripen">Reifegrad</h2>
+      <p class="ripen-intro">Der Handel arbeitet mit einem Farbfächer von 1 bis 7. Gereift wird nicht
+        am Strauch, sondern in Kammern: Ethylen rein, Temperatur runter, Stärke wird zu Zucker.</p>
+      <p class="ripen-stagebig"><span class="ripen-num" id="ripenNum">1</span><span class="ripen-of">von 7</span></p>
+      <h3 class="ripen-name" id="ripenName">Dunkelgrün</h3>
+      <p class="ripen-desc" id="ripenDesc">Erntezustand. Hart, stärkehaltig, geschmacklich nicht der Rede wert — genau so soll sie ins Schiff.</p>
+      <dl class="ripen-d">
+        <div><dt>Stärke</dt><dd id="ripenStarch">20 %</dd></div>
+        <div><dt>Zucker</dt><dd id="ripenSugar">1 %</dd></div>
+        <div><dt>Ort</dt><dd id="ripenWhere">Reeferschiff, 13,5 °C</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · FINALE ============ -->
+<section class="finale" id="finale" aria-labelledby="h-finale">
+  <div class="rain" id="rain" aria-hidden="true"></div>
+  <div class="finale-inner">
+    <p class="kicker">Station 05</p>
+    <h2 id="h-finale" class="finale-h" data-txt="Peak Banane">Peak Banane</h2>
+    <p class="finale-lede">Stufe 7, Aroma-Maximum, ab hier geht es nur noch bergab —
+      beziehungsweise in den Kuchen. Klick die Banane, wenn dir danach ist.</p>
+    <button type="button" class="finale-btn" id="bigNanaBtn" aria-label="Bananen werfen">
+      <svg class="nana finale-nana" id="finaleNana" style="--spot:1" aria-hidden="true"><use href="#nana"/></svg>
+    </button>
+
+    <dl class="facts">
+      <div><dt>Mindestkaliber</dt><dd>27 mm</dd><p>EU-Vermarktungsnorm, gemessen am mittleren Finger</p></div>
+      <div><dt>Mindestlänge</dt><dd>14 cm</dd><p>Bogenlänge an der konvexen Außenkante</p></div>
+      <div><dt>Standardkarton</dt><dd>18,14 kg</dd><p>entspricht exakt 40 amerikanischen Pfund</p></div>
+      <div><dt>Transport</dt><dd>13,5 °C</dd><p>darunter platzt die Kühlkette, drüber reift sie unterwegs</p></div>
+      <div><dt>Reifestufen</dt><dd>1 – 7</dd><p>Farbfächer vom dunkelgrünen Erntezustand bis zur Punktphase</p></div>
+      <div><dt>Strahlendosis</dt><dd>0,1 µSv</dd><p>eine Banane, Kalium-40 — die berühmte Vergleichseinheit</p></div>
+    </dl>
+
+    <p class="myth"><span>Faktencheck</span> Botanisch ist die Banane eine Beere und die Staude ein
+      Kraut, kein Baum. Die viel zitierten „60 % gemeinsame Gene mit dem Menschen“ dagegen sind
+      eine Zahl, die je nach Zählweise fast beliebig wackelt — schön, aber nichts, worauf man baut.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p><a href="../">← zurück zu 3D Models &amp; Drawings</a></p>
+  <p>&copy; 2026 <a href="https://github.com/spacecrafter29" target="_blank" rel="noopener">SpaceCrafter29</a>
+     und <a href="https://mschro67.github.io" target="_blank" rel="noopener">mschro67</a>. Alle Rechte vorbehalten.</p>
+  <p class="foot-fine">Keine Banane wurde bei der Produktion dieser Seite verletzt.</p>
+</footer>
+
+<script src="bananen.js"></script>
+</body>
+</html>

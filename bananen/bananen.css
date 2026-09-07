@@ -1,0 +1,732 @@
+/* ==========================================================================
+   Krumme Dinger — ein Bananen-Schaufenster in 3D
+   Eine Welt, ein Look: Obstkiste bei Nacht. Kein Theme-Toggle, alles explizit.
+   ========================================================================== */
+
+:root{
+  color-scheme: dark;
+
+  /* Farben ------------------------------------------------------------- */
+  --ground:    #17120c;   /* warmes Kistenschwarz, Gelbstich statt Neutralgrau */
+  --ground-2:  #211809;
+  --ground-3:  #2c2011;
+  --paper:     #ece0c2;   /* Karton */
+  --paper-dim: #b6a684;
+  --ink:       #1a1208;   /* Schablonenfarbe auf Karton */
+  --peel:      #ffd21e;
+  --peel-hi:   #fff08a;
+  --peel-dp:   #d9a300;
+  --rot:       #7b4a1c;   /* Braunfleck */
+  --green:     #7fb03a;
+  --mag:       #ff2e88;   /* nur für Farbversatz */
+  --cyan:      #23e5ff;   /* nur für Farbversatz */
+
+  /* Typo ---------------------------------------------------------------- */
+  --display: "Alfa Slab One", "Rockwell", Georgia, serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+
+  /* Laufzeit (JS schreibt hier rein) ------------------------------------ */
+  --vel: 0;       /* Scrollgeschwindigkeit, ±  */
+  --avel: 0;      /* Betrag davon */
+  --I: 1;         /* Effektstärke */
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html{ scroll-behavior: smooth; }
+
+body{
+  margin: 0;
+  background: var(--ground);
+  color: var(--paper);
+  font-family: var(--body);
+  font-size: clamp(15px, 0.55vw + 13px, 18px);
+  line-height: 1.62;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kartonstruktur über allem, ganz leise */
+body::before{
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9;
+  background: radial-gradient(125% 95% at 50% 0%, transparent 42%, rgba(0,0,0,.5) 100%);
+  mix-blend-mode: multiply;
+}
+
+.sprite{ position: absolute; width: 0; height: 0; overflow: hidden; }
+
+p{ margin: 0 0 1em; }
+a{ color: var(--peel); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover{ color: var(--peel-hi); }
+
+:focus-visible{
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+h1,h2,h3{ font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+
+.kicker{
+  font-family: var(--mono);
+  font-size: .78rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--peel-dp);
+  margin: 0 0 .6em;
+}
+
+.eyebrow{
+  font-family: var(--mono);
+  font-size: clamp(.66rem, 1.4vw, .8rem);
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  margin: 0 0 1.1em;
+}
+
+/* Banane ---------------------------------------------------------------- */
+.nana{
+  display: block;
+  width: 1em; height: 1em;
+  color: var(--peel);
+  overflow: visible;
+}
+
+/* ==========================================================================
+   HUD + Fortschrittsband
+   ========================================================================== */
+.hud{
+  position: fixed; z-index: 40;
+  top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+  padding: .85rem clamp(.9rem, 3vw, 2rem);
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+.hud-mark{
+  margin: 0;
+  font-family: var(--mono); font-weight: 700;
+  font-size: .72rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--paper-dim);
+  padding: .35rem .7rem;
+  border: 1px solid rgba(236,224,194,.22);
+  background: rgba(23,18,12,.72);
+}
+.hud-mark span{ color: var(--peel); }
+.hud-ctrl{ display: flex; gap: .4rem; pointer-events: auto; }
+
+.btn{
+  font-family: var(--mono); font-weight: 700;
+  font-size: .72rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(23,18,12,.72);
+  border: 1px solid rgba(236,224,194,.28);
+  padding: .45rem .8rem;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn:hover{ border-color: var(--peel); color: var(--peel); }
+.btn[aria-pressed="true"]{
+  background: var(--peel); color: var(--ink); border-color: var(--peel);
+}
+
+.tape{
+  position: fixed; z-index: 40;
+  left: 0; right: 0; bottom: 0;
+  height: 26px;
+  background:
+    repeating-linear-gradient(90deg, rgba(236,224,194,.30) 0 1px, transparent 1px 12px),
+    rgba(23,18,12,.86);
+  border-top: 1px solid rgba(236,224,194,.2);
+  pointer-events: none;
+}
+.tape-fill{
+  position: absolute; inset: 0 auto 0 0;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(217,163,0,.35), rgba(255,210,30,.6));
+  border-right: 2px solid var(--peel);
+}
+.tape-rider{
+  position: absolute; bottom: 3px; left: 0;
+  width: 30px; height: 30px;
+  transform: translateX(-50%) rotate(-18deg);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.hero{
+  position: relative;
+  min-height: min(88vh, 760px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(5rem, 12vh, 9rem) clamp(1.1rem, 5vw, 5rem) clamp(3rem, 8vh, 6rem);
+  overflow: hidden;
+  perspective: 900px;
+}
+.hero-grid{
+  position: absolute; inset: 40% -30% -20% -30%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,210,30,.16) 0 1px, transparent 1px 90px),
+    repeating-linear-gradient(0deg,  rgba(255,210,30,.16) 0 1px, transparent 1px 90px);
+  transform: rotateX(72deg) translateZ(-90px);
+  transform-origin: 50% 0;
+  mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 92%);
+  pointer-events: none;
+}
+.hero-copy{ position: relative; z-index: 2; max-width: 42ch; }
+
+.title{
+  font-size: clamp(2.9rem, 11vw, 8.5rem);
+  line-height: .86;
+  letter-spacing: -.015em;
+  color: var(--paper);
+  position: relative;
+  margin: 0 0 .35em;
+  text-transform: uppercase;
+}
+/* Farbversatz — reagiert auf Scrollgeschwindigkeit */
+.title::before, .title::after,
+.finale-h::before, .finale-h::after{
+  content: attr(data-txt);
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: clamp(0, calc(var(--avel) * var(--I) * .16), .9);
+}
+.title::before, .finale-h::before{
+  color: var(--mag);
+  transform: translate3d(calc(var(--avel) * var(--I) * -0.42px), calc(var(--vel) * var(--I) * .06px), 0);
+}
+.title::after, .finale-h::after{
+  color: var(--cyan);
+  transform: translate3d(calc(var(--avel) * var(--I) * 0.42px), calc(var(--vel) * var(--I) * -.06px), 0);
+}
+
+.lede{
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  color: var(--paper-dim);
+  max-width: 42ch;
+}
+.hint{
+  font-family: var(--mono);
+  font-size: .8rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--peel);
+  margin: 2rem 0 0;
+}
+.hint-arrow{ display: inline-block; animation: bob 1.6s ease-in-out infinite; }
+@keyframes bob{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(6px) } }
+
+.hero-fruit{
+  position: relative; z-index: 2;
+  display: grid; place-items: center;
+  transform-style: preserve-3d;
+}
+.hero-nana{
+  width: clamp(190px, 30vw, 420px); height: auto; aspect-ratio: 1;
+  filter: drop-shadow(0 30px 40px rgba(0,0,0,.65));
+  transform-style: preserve-3d;
+}
+.sticker{
+  position: absolute; right: 2%; bottom: 6%;
+  display: grid; justify-items: center; gap: .1rem;
+  width: clamp(104px, 15vw, 150px); aspect-ratio: 1.35;
+  padding: .7rem .5rem;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: 0 10px 24px rgba(0,0,0,.5);
+  transform: rotate(-11deg);
+  text-align: center;
+}
+.sticker-top, .sticker-bot{
+  font-family: var(--mono); font-size: .54rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
+}
+.sticker-bot{ color: #6b5836; }
+.sticker-big{
+  font-family: var(--display);
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+  line-height: 1;
+  color: #b4141a;
+}
+
+/* ==========================================================================
+   Laufband-Schriftzug
+   ========================================================================== */
+.mq{
+  overflow: hidden;
+  border-block: 1px solid rgba(236,224,194,.16);
+  background: var(--ground-2);
+  transform: rotate(-1.4deg) scaleX(1.06);
+  margin: clamp(2rem, 6vh, 4rem) 0;
+  padding: .5rem 0;
+}
+.mq-b{ transform: rotate(1.2deg) scaleX(1.06); background: var(--peel); }
+.mq-inner{
+  display: flex; gap: 2.2rem;
+  white-space: nowrap; width: max-content;
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 3.4vw, 2.6rem);
+  text-transform: uppercase;
+  color: var(--peel-dp);
+  will-change: transform;
+}
+.mq-b .mq-inner{ color: var(--ink); }
+.mq-inner span{ display: inline-flex; align-items: center; gap: 2.2rem; }
+.mq-inner .nana{ width: .9em; height: .9em; }
+.mq-b .mq-inner .nana{ color: var(--ground-2); }
+
+/* ==========================================================================
+   01 · Anlieferung — Kisten fliegen entgegen
+   ========================================================================== */
+.tunnel{ height: 300vh; position: relative; }
+.tunnel-stage{
+  position: sticky; top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: grid; place-items: center;
+  perspective: 620px;
+  perspective-origin: 50% 45%;
+  background: radial-gradient(70% 55% at 50% 45%, var(--ground-3), var(--ground) 72%);
+}
+.tunnel-space{
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.crate{
+  position: absolute; top: 50%; left: 50%;
+  width: 190px; margin: -60px 0 0 -95px;
+  padding: .55rem .7rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: inset 0 0 0 6px rgba(26,18,8,.08);
+  font-family: var(--mono); font-weight: 700;
+  will-change: transform, opacity;
+}
+.crate b{
+  display: block;
+  font-family: var(--display); font-weight: 400;
+  font-size: 1.35rem; line-height: 1; text-transform: uppercase;
+}
+.crate i{
+  display: block; font-style: normal;
+  font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+  color: #6b5836;
+  margin-top: .3rem;
+}
+.crate em{
+  display: block; font-style: normal;
+  font-size: .8rem; letter-spacing: .1em;
+  border-top: 2px solid var(--ink);
+  margin-top: .4rem; padding-top: .25rem;
+}
+.tunnel-copy{
+  position: relative; z-index: 3;
+  max-width: 46ch; margin-inline: auto;
+  padding: clamp(1.2rem, 4vw, 2.2rem);
+  text-align: center;
+  background: rgba(23,18,12,.82);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(236,224,194,.16);
+}
+.tunnel-copy h2{ font-size: clamp(2rem, 6vw, 3.6rem); line-height: .95; color: var(--peel); text-transform: uppercase; margin-bottom: .4em; }
+.tunnel-copy p{ color: var(--paper-dim); margin: 0; }
+
+/* ==========================================================================
+   02 · Sichtung — Panels schwenken von links und rechts herein
+   ========================================================================== */
+.sichtung{
+  position: relative;
+  padding: clamp(3rem, 10vh, 7rem) clamp(1rem, 5vw, 4rem) clamp(4rem, 12vh, 9rem);
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+}
+.section-head{
+  max-width: 46ch; margin: 0 auto clamp(2.5rem, 7vh, 5rem);
+  text-align: center;
+}
+.section-head h2{
+  font-size: clamp(2.2rem, 7vw, 4.4rem);
+  line-height: .92; text-transform: uppercase;
+  color: var(--paper);
+  margin-bottom: .35em;
+}
+.section-head p{ color: var(--paper-dim); margin: 0; }
+
+.panel{
+  display: grid;
+  grid-template-columns: minmax(140px, .38fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.2rem, 4vw, 3rem);
+  max-width: 940px;
+  margin: 0 auto clamp(3rem, 9vh, 6.5rem);
+  padding: clamp(1.3rem, 3.5vw, 2.4rem);
+  background: linear-gradient(150deg, var(--ground-3), var(--ground-2));
+  border: 1px solid rgba(236,224,194,.18);
+  border-left: 6px solid var(--peel);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.panel[data-swoop="right"]{
+  grid-template-columns: minmax(0, 1fr) minmax(140px, .38fr);
+  border-left: 1px solid rgba(236,224,194,.18);
+  border-right: 6px solid var(--peel);
+}
+.panel:last-child{ margin-bottom: 0; }
+
+.panel-art{ display: grid; place-items: center; }
+.panel-art .nana{
+  width: clamp(90px, 14vw, 168px); height: auto; aspect-ratio: 1;
+  filter: drop-shadow(0 16px 22px rgba(0,0,0,.55));
+  animation: sway 7s ease-in-out infinite;
+}
+.panel[data-swoop="right"] .panel-art{ order: 2; }
+.panel[data-swoop="right"] .panel-art .nana{ animation-delay: -3.5s; transform: scaleX(-1); }
+@keyframes sway{
+  0%,100%{ rotate: -6deg } 50%{ rotate: 8deg }
+}
+
+.panel-nick{
+  font-family: var(--mono);
+  font-size: .74rem; letter-spacing: .26em; text-transform: uppercase;
+  color: var(--peel-dp); margin: 0 0 .3em;
+}
+.panel-txt h3{
+  font-size: clamp(1.7rem, 4.4vw, 2.8rem);
+  line-height: 1; text-transform: uppercase;
+  color: var(--peel);
+  margin: 0 0 .5em;
+}
+.panel-txt > p{ color: var(--paper-dim); max-width: 58ch; }
+
+.spec{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: .1rem 1.4rem;
+  margin: 1.4rem 0 0;
+  border-top: 1px solid rgba(236,224,194,.18);
+  padding-top: .9rem;
+  font-family: var(--mono);
+}
+.spec div{ display: flex; flex-direction: column; padding: .3rem 0; }
+.spec dt{ font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: #8b7c5e; }
+.spec dd{ margin: 0; font-size: .94rem; font-weight: 700; color: var(--paper); font-variant-numeric: tabular-nums; }
+.spec dd.warn{ color: #ff7a4d; }
+
+/* ==========================================================================
+   03 · Sortierband — runterscrollen, seitwärts fahren
+   ========================================================================== */
+.belt{ height: 380vh; position: relative; background: var(--ground-2); }
+.belt-stage{
+  position: sticky; top: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(.5rem, 2vh, 1.5rem);
+  padding: clamp(4rem, 10vh, 6rem) 0 clamp(2.5rem, 7vh, 4rem);
+  overflow: hidden;
+  background:
+    radial-gradient(80% 60% at 50% 100%, rgba(255,210,30,.09), transparent 70%),
+    var(--ground-2);
+}
+.belt-head{
+  max-width: 52ch;
+  padding-inline: clamp(1.1rem, 5vw, 4rem);
+}
+.belt-head h2{
+  font-size: clamp(2rem, 6vw, 3.8rem);
+  line-height: .92; text-transform: uppercase; color: var(--peel);
+  margin-bottom: .3em;
+}
+.belt-head p{ color: var(--paper-dim); margin: 0; font-size: .96rem; }
+
+.belt-viewport{
+  position: relative;
+  display: grid; align-content: center;
+  perspective: 1000px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+}
+.belt-track{
+  display: flex;
+  align-items: stretch;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding-inline: clamp(1.1rem, 6vw, 5rem);
+  width: max-content;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.spec-card{
+  flex: 0 0 auto;
+  width: clamp(200px, 21vw, 268px);
+  display: flex; flex-direction: column; gap: .55rem;
+  padding: 1.1rem 1.1rem 1.2rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  outline: 1px solid rgba(236,224,194,.3);
+  box-shadow: 0 18px 34px rgba(0,0,0,.45);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.sc-no{
+  font-family: var(--mono); font-weight: 700;
+  font-size: .64rem; letter-spacing: .22em; text-transform: uppercase;
+  color: #6b5836; margin: 0;
+}
+.spec-card .nana{
+  width: 100%; height: auto; aspect-ratio: 1.4;
+  overflow: hidden;
+}
+.sc-d{ margin: 0; display: grid; gap: .05rem; font-family: var(--mono); }
+.sc-d div{ display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; border-bottom: 1px dotted rgba(26,18,8,.28); padding: .18rem 0; }
+.sc-d dt{ font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: #6b5836; }
+.sc-d dd{ margin: 0; font-weight: 700; font-size: .88rem; font-variant-numeric: tabular-nums; }
+.sc-k{
+  margin: .2rem 0 0; align-self: flex-start;
+  font-family: var(--mono); font-weight: 700;
+  font-size: .64rem; letter-spacing: .2em; text-transform: uppercase;
+  padding: .18rem .5rem;
+  border: 2px solid currentColor;
+}
+.k-x{ color: #1a6b2f; }
+.k-1{ color: #8a6a12; }
+.k-2{ color: #9a4a12; }
+.k-out{ color: #b4141a; background: rgba(180,20,26,.1); }
+.sc-b{ margin: 0; font-size: .8rem; color: #4a3c26; font-style: italic; }
+
+.ruler{
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 34px;
+  border-top: 2px solid rgba(236,224,194,.3);
+  background: repeating-linear-gradient(90deg,
+      rgba(236,224,194,.55) 0 2px, transparent 2px 26px);
+  will-change: transform;
+  opacity: .5;
+}
+
+/* ==========================================================================
+   04 · Reifegrad
+   ========================================================================== */
+.ripen{ height: 420vh; position: relative; }
+.ripen-stage{
+  position: sticky; top: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(4.5rem, 11vh, 7rem) clamp(1.1rem, 5vw, 5rem) clamp(3rem, 8vh, 5rem);
+  overflow: hidden;
+  background: radial-gradient(75% 60% at 30% 50%, var(--ground-3), var(--ground) 75%);
+}
+.ripen-art{ display: grid; place-items: center; gap: 1.6rem; }
+.ripen-nana{
+  width: clamp(170px, 26vw, 360px); height: auto; aspect-ratio: 1;
+  filter: drop-shadow(0 26px 34px rgba(0,0,0,.6));
+  will-change: transform;
+}
+.ripen-scale{ display: flex; gap: .35rem; }
+.ripen-scale i{
+  display: block; width: clamp(22px, 3.6vw, 38px); height: 12px;
+  border: 1px solid rgba(236,224,194,.4);
+  opacity: .4;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.ripen-scale i.on{ opacity: 1; transform: scaleY(1.9); }
+
+.ripen-copy{ max-width: 44ch; }
+.ripen-copy h2{
+  font-size: clamp(2.1rem, 6.5vw, 4rem); line-height: .92;
+  text-transform: uppercase; color: var(--paper); margin-bottom: .3em;
+}
+.ripen-intro{ color: var(--paper-dim); font-size: .96rem; }
+.ripen-stagebig{
+  display: flex; align-items: baseline; gap: .6rem;
+  margin: 1.4rem 0 .1rem;
+  border-top: 1px solid rgba(236,224,194,.2);
+  padding-top: 1rem;
+}
+.ripen-num{
+  font-family: var(--display);
+  font-size: clamp(3.2rem, 9vw, 5.6rem); line-height: .8;
+  color: var(--peel);
+  font-variant-numeric: tabular-nums;
+}
+.ripen-of{
+  font-family: var(--mono); font-size: .78rem;
+  letter-spacing: .24em; text-transform: uppercase; color: #8b7c5e;
+}
+.ripen-name{
+  font-size: clamp(1.3rem, 3.2vw, 2rem);
+  text-transform: uppercase; color: var(--paper); margin: 0 0 .4em;
+}
+.ripen-desc{ color: var(--paper-dim); min-height: 4.4em; }
+.ripen-d{
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: .2rem 1.4rem; margin: 0;
+  border-top: 1px solid rgba(236,224,194,.18); padding-top: .9rem;
+  font-family: var(--mono);
+}
+.ripen-d div{ display: flex; flex-direction: column; }
+.ripen-d dt{ font-size: .64rem; letter-spacing: .2em; text-transform: uppercase; color: #8b7c5e; }
+.ripen-d dd{ margin: 0; font-weight: 700; color: var(--paper); font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   05 · Finale
+   ========================================================================== */
+.finale{
+  position: relative;
+  padding: clamp(4rem, 12vh, 8rem) clamp(1.1rem, 5vw, 4rem) clamp(5rem, 14vh, 9rem);
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--ground) 0%, var(--ground-2) 55%, var(--ground) 100%);
+}
+.rain{ position: absolute; inset: -10% 0 0; pointer-events: none; }
+.rain .nana{
+  position: absolute; top: -14vh;
+  width: 42px; height: 42px;
+  opacity: .5;
+  animation: fall linear infinite;
+}
+@keyframes fall{
+  from{ transform: translate3d(0, -20vh, 0) rotate(0deg); }
+  to  { transform: translate3d(0, 130vh, 0) rotate(540deg); }
+}
+.finale-inner{ position: relative; z-index: 2; max-width: 960px; margin: 0 auto; text-align: center; }
+.finale-h{
+  position: relative;
+  font-size: clamp(2.6rem, 10vw, 7rem); line-height: .88;
+  text-transform: uppercase; color: var(--paper);
+  margin: 0 0 .3em;
+}
+.finale-lede{ color: var(--paper-dim); max-width: 48ch; margin-inline: auto; }
+.finale-btn{
+  display: block; margin: clamp(1.5rem, 5vh, 3rem) auto;
+  background: none; border: 0; padding: 0; cursor: pointer;
+}
+.finale-nana{
+  width: clamp(160px, 30vw, 330px); height: auto; aspect-ratio: 1;
+  filter: drop-shadow(0 24px 30px rgba(0,0,0,.6));
+  transition: transform .2s ease;
+}
+.finale-btn:hover .finale-nana{ transform: scale(1.06) rotate(-6deg); }
+.finale-btn:active .finale-nana{ transform: scale(.94) rotate(4deg); }
+
+.facts{
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0 clamp(1.4rem, 4vw, 3rem);
+  margin: clamp(2rem, 6vh, 3.5rem) 0 0;
+  text-align: left;
+  border-top: 2px solid rgba(236,224,194,.22);
+}
+.facts > div{
+  padding: 1.2rem .2rem 1.3rem;
+  border-bottom: 1px solid rgba(236,224,194,.14);
+}
+.facts dt{
+  font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .22em; text-transform: uppercase; color: #8b7c5e;
+}
+.facts dd{
+  margin: .15rem 0 .3rem;
+  font-family: var(--display);
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1;
+  color: var(--peel);
+  font-variant-numeric: tabular-nums;
+}
+.facts p{ margin: 0; font-size: .84rem; color: var(--paper-dim); line-height: 1.5; }
+
+.myth{
+  max-width: 62ch; margin: clamp(2rem, 6vh, 3.5rem) auto 0;
+  text-align: left;
+  font-size: .92rem; color: var(--paper-dim);
+  border-left: 4px solid var(--rot);
+  padding: .3rem 0 .3rem 1.1rem;
+}
+.myth span{
+  display: block;
+  font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .24em; text-transform: uppercase; color: var(--rot);
+  margin-bottom: .35em;
+}
+
+/* fliegende Bananen beim Klick */
+.burst{
+  position: fixed; z-index: 30; pointer-events: none;
+  width: 34px; height: 34px;
+}
+
+/* ==========================================================================
+   Fuß
+   ========================================================================== */
+.foot{
+  padding: clamp(2.5rem, 7vh, 4rem) clamp(1.1rem, 5vw, 4rem) 4.5rem;
+  border-top: 1px solid rgba(236,224,194,.16);
+  background: var(--ground);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--paper-dim);
+}
+.foot p{ margin: 0 0 .5em; }
+.foot-fine{ color: #6b5f47; font-size: .72rem; letter-spacing: .1em; }
+
+/* ==========================================================================
+   Schmale Schirme
+   ========================================================================== */
+@media (max-width: 860px){
+  .hero{ grid-template-columns: 1fr; min-height: auto; }
+  .hero-copy{ max-width: none; }
+  .hero-fruit{ order: -1; }
+  .panel{ grid-template-columns: 1fr; }
+  .panel[data-swoop="right"] .panel-art{ order: 0; }
+  .panel-art .nana{ width: clamp(96px, 26vw, 150px); }
+  .ripen-stage{ grid-template-columns: 1fr; align-content: center; gap: 1.4rem; }
+  .ripen-nana{ width: clamp(120px, 34vw, 200px); }
+  .ripen-desc{ min-height: 5.6em; }
+  .belt{ height: 320vh; }
+  .tunnel{ height: 240vh; }
+}
+@media (max-width: 560px){
+  .hud-mark{ display: none; }
+  .facts{ grid-template-columns: 1fr; }
+  .ripen-stagebig{ margin-top: 1rem; padding-top: .7rem; }
+}
+
+/* ==========================================================================
+   Ruhe-Modus (Knopf oder Systemeinstellung)
+   ========================================================================== */
+body.calm .rain,
+body.calm .hero-grid{ display: none; }
+body.calm .hint-arrow,
+body.calm .panel-art .nana{ animation: none; }
+body.calm .title::before, body.calm .title::after,
+body.calm .finale-h::before, body.calm .finale-h::after{ display: none; }
+body.calm .mq{ transform: none; }
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+  .hint-arrow, .panel-art .nana, .rain .nana{ animation: none; }
+}
+
+/* Turbo — mehr Sättigung, mehr Glühen */
+body.turbo{ --peel: #ffe23a; }
+body.turbo .hero-nana,
+body.turbo .finale-nana,
+body.turbo .ripen-nana{
+  filter: drop-shadow(0 0 26px rgba(255,210,30,.55)) drop-shadow(0 24px 30px rgba(0,0,0,.6));
+}
+body.turbo .tunnel-stage{ background: radial-gradient(70% 55% at 50% 45%, #3a2a12, var(--ground) 72%); }
