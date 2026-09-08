@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="SpaceCrafter29">
+<meta name="description" content="Ein scroll-getriebenes 3D-Schaufenster für Muffins: fünf Sorten schwenken von links und rechts herein, ein Blech fährt seitwärts, und der Backverlauf läuft von Minute 0 bis 22.">
+<meta name="theme-color" content="#e7e0d5">
+<title>Ofentrieb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400;9..144,700;9..144,900&family=Karla:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="muffins.css">
+</head>
+<body>
+
+<canvas id="bg" class="bg" aria-hidden="true"></canvas>
+
+<div class="hud">
+  <p class="hud-mark">92b <span>·</span> Backstube</p>
+  <div class="hud-ctrl">
+    <button type="button" id="turbo" class="btn" aria-pressed="false">Turbo</button>
+    <button type="button" id="ruhe" class="btn" aria-pressed="false">Ruhe</button>
+  </div>
+</div>
+
+<div class="rail" aria-hidden="true">
+  <div class="rail-fill" id="railFill"></div>
+  <span class="rail-rider" id="railRider"></span>
+</div>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Rührteig &nbsp;·&nbsp; 12 Mulden &nbsp;·&nbsp; 200 dann 175 °C</p>
+    <h1 class="title" data-txt="Ofentrieb">Ofentrieb</h1>
+    <p class="lede">So heißt der Moment, in dem die Kuppel im Ofen hochschießt. Diese Seite zeigt,
+      was davor und danach passiert — scroll runter, die Ware kommt von links, von rechts
+      und einmal quer durchs Bild.</p>
+    <p class="hint"><span class="hint-arrow" aria-hidden="true">↓</span> Runterscrollen. Schnell scrollen staubt mehr.</p>
+  </div>
+  <div class="hero-stage" id="heroStage">
+    <canvas class="mf hero-mf" id="heroMf" data-muffin="schoko" data-size="620" role="img"
+            aria-label="Schokoladenmuffin mit aufgerissener Kuppel in braunem Papierförmchen"></canvas>
+    <div class="dust" id="dust" aria-hidden="true"></div>
+  </div>
+</header>
+
+<div class="mq" aria-hidden="true"><div class="mq-inner" data-mq="1" data-dir="-1"></div></div>
+
+<!-- ============ 01 · DER TEIG ============ -->
+<section class="ring" id="teig" aria-labelledby="h-teig">
+  <div class="ring-stage">
+    <div class="ring-copy">
+      <p class="kicker">Station 01</p>
+      <h2 id="h-teig">Der Teig</h2>
+      <p>Grundrezept für zwölf Stück. Trockenes und Nasses bleiben getrennt, bis alles in der
+        Schüssel ist — und dann wird <em>zehn Sekunden</em> gerührt, nicht länger. Klumpen sind
+        kein Fehler, sie sind das Ziel: Wer glatt rührt, entwickelt Gluten und bekommt zähe
+        Muffins mit länglichen Löchern. Die heißen im Fach tatsächlich Tunnel.</p>
+      <p class="ring-hint">Der Ring dreht sich mit dem Scrollstand.</p>
+    </div>
+    <div class="ring-space" aria-hidden="true">
+      <div class="ring-turn" id="ringTurn"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · DIE SORTEN ============ -->
+<section class="sorten" id="sorten" aria-labelledby="h-sorten">
+  <div class="section-head">
+    <p class="kicker">Station 02</p>
+    <h2 id="h-sorten">Die Sorten</h2>
+    <p>Fünf Varianten auf demselben Grundteig. Sie schwenken abwechselnd von links und von
+      rechts herein, so wie sie vom Blech kommen.</p>
+  </div>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><canvas class="mf" data-muffin="schoko" data-size="380" role="img" aria-label="Schokoladenmuffin mit Schokostücken"></canvas></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Klassiker</p>
+      <h3>Schokolade &amp; Chunks</h3>
+      <p>20 g Kakao ersetzen 20 g Mehl, sonst wird der Teig trocken. Die Stücke kommen zuletzt
+        dazu und werden nur noch untergehoben — geschmolzene Schokolade im Teig färbt zwar
+        schön, verschwindet aber im Mund. Stücke bleiben Stücke.</p>
+      <dl class="spec">
+        <div><dt>Kakao</dt><dd>20 g</dd></div>
+        <div><dt>Schokostücke</dt><dd>120 g</dd></div>
+        <div><dt>Backzeit</dt><dd>20 min</dd></div>
+        <div><dt>Krume</dt><dd>dunkel, feinporig</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="right">
+    <div class="panel-art"><canvas class="mf" data-muffin="blaubeere" data-size="380" role="img" aria-label="Blaubeermuffin mit eingebackenen Beeren"></canvas></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Saftige</p>
+      <h3>Blaubeere</h3>
+      <p>Die Beeren vorher in einem Esslöffel Mehl wälzen, sonst sacken sie beim Backen alle
+        nach unten und bilden am Boden eine blaue Schicht. Tiefgekühlte Beeren nicht auftauen —
+        gefroren bluten sie weniger in den Teig.</p>
+      <dl class="spec">
+        <div><dt>Beeren</dt><dd>150 g</dd></div>
+        <div><dt>Trick</dt><dd>in Mehl gewälzt</dd></div>
+        <div><dt>Backzeit</dt><dd>18–20 min</dd></div>
+        <div><dt>Krume</dt><dd>hell, feucht</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><canvas class="mf" data-muffin="zitrone" data-size="380" role="img" aria-label="Zitronen-Mohn-Muffin mit Zuckerguss"></canvas></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Wache</p>
+      <h3>Zitrone &amp; Mohn</h3>
+      <p>Der Abrieb kommt in den Zucker, nicht in die Milch: Im Zucker verrieben platzen die
+        Öldrüsen der Schale auf und geben ihr Aroma an den ganzen Teig ab. Der Guss wird erst
+        auf den lauwarmen Muffin gestrichen, sonst läuft er ab.</p>
+      <dl class="spec">
+        <div><dt>Abrieb</dt><dd>2 Zitronen</dd></div>
+        <div><dt>Mohn</dt><dd>30 g</dd></div>
+        <div><dt>Guss</dt><dd>80 g Puderzucker</dd></div>
+        <div><dt>Backzeit</dt><dd>18 min</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="right">
+    <div class="panel-art"><canvas class="mf" data-muffin="streusel" data-size="380" role="img" aria-label="Apfel-Zimt-Muffin mit Streuseldecke"></canvas></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Bedeckte</p>
+      <h3>Apfel &amp; Zimt mit Streusel</h3>
+      <p>Streusel aus 60 g Mehl, 40 g kalter Butter und 40 g Zucker, mit den Fingerspitzen
+        zerkrümelt — warme Hände geben Teig statt Streusel. Die Decke bremst die Hitze,
+        deshalb braucht dieser Muffin zwei Minuten länger als der Rest.</p>
+      <dl class="spec">
+        <div><dt>Apfel</dt><dd>150 g gewürfelt</dd></div>
+        <div><dt>Zimt</dt><dd>1 TL</dd></div>
+        <div><dt>Streusel</dt><dd>140 g</dd></div>
+        <div><dt>Backzeit</dt><dd>22 min</dd></div>
+      </dl>
+    </div>
+  </article>
+
+  <article class="panel" data-swoop="left">
+    <div class="panel-art"><canvas class="mf" data-muffin="karotte" data-size="380" role="img" aria-label="Karottenmuffin mit Frischkäsehaube und Walnuss"></canvas></div>
+    <div class="panel-txt">
+      <p class="panel-nick">Der Getarnte</p>
+      <h3>Karotte &amp; Walnuss</h3>
+      <p>Fein gerieben, nicht grob: Große Raspel bleiben bissfest und ziehen Wasser aus dem
+        Teig. Die Frischkäsehaube kommt erst auf den vollständig ausgekühlten Muffin, sonst
+        wird sie flüssig und rutscht seitlich ab.</p>
+      <dl class="spec">
+        <div><dt>Karotte</dt><dd>200 g fein</dd></div>
+        <div><dt>Walnuss</dt><dd>60 g</dd></div>
+        <div><dt>Haube</dt><dd>Frischkäse</dd></div>
+        <div><dt>Backzeit</dt><dd>20 min</dd></div>
+      </dl>
+    </div>
+  </article>
+</section>
+
+<div class="mq mq-b" aria-hidden="true"><div class="mq-inner" data-mq="2" data-dir="1"></div></div>
+
+<!-- ============ 03 · DAS BLECH ============ -->
+<section class="tray" id="blech" aria-labelledby="h-blech">
+  <div class="tray-stage">
+    <div class="tray-head">
+      <p class="kicker">Station 03</p>
+      <h2 id="h-blech">Das Blech</h2>
+      <p>Ab hier scrollst du weiter nach unten — das Blech fährt trotzdem seitwärts durch.
+        Acht Mulden, gemessen nach dem Auskühlen: Kuppelhöhe über dem Förmchenrand.</p>
+    </div>
+    <div class="tray-viewport">
+      <div class="tray-track" id="trayTrack"></div>
+      <div class="tray-rack" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · DER OFEN ============ -->
+<section class="oven" id="ofen" aria-labelledby="h-ofen">
+  <div class="oven-stage">
+    <div class="oven-art">
+      <div class="oven-window" id="ovenWindow" aria-hidden="true"></div>
+      <div class="oven-scale" id="ovenScale" aria-hidden="true"></div>
+    </div>
+    <div class="oven-copy">
+      <p class="kicker">Station 04</p>
+      <h2 id="h-ofen">Der Ofen</h2>
+      <p class="oven-intro">22 Minuten in einem Bild. Die ersten acht bei 200 °C — die hohe
+        Anfangshitze treibt die Kuppel hoch, bevor der Teig fest wird. Danach runter auf 175 °C,
+        sonst verbrennt außen, was innen noch roh ist.</p>
+      <p class="oven-clock"><span class="oven-min" id="ovenMin">0</span><span class="oven-unit">min</span><span class="oven-temp" id="ovenTemp">200 °C</span></p>
+      <h3 class="oven-name" id="ovenName">Teig eingefüllt</h3>
+      <p class="oven-desc" id="ovenDesc">Die Mulden sind zu zwei Dritteln gefüllt, die Oberfläche ist noch nass und glänzt. Jetzt nichts mehr glattstreichen.</p>
+      <dl class="oven-d">
+        <div><dt>Kuppelhöhe</dt><dd id="ovenDome">0 mm</dd></div>
+        <div><dt>Kern</dt><dd id="ovenCore">21 °C</dd></div>
+        <div><dt>Zustand</dt><dd id="ovenState">flüssig</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · FINALE ============ -->
+<section class="finale" id="finale" aria-labelledby="h-finale">
+  <div class="finale-inner">
+    <p class="kicker">Station 05</p>
+    <h2 id="h-finale" class="finale-h" data-txt="Frisch aus dem Ofen">Frisch aus dem Ofen</h2>
+    <p class="finale-lede">Fünf Minuten im Blech ruhen, dann aufs Gitter — bleiben sie länger
+      liegen, zieht der Dampf zurück ins Papier und weicht den Boden auf. Klick drauf,
+      wenn du es eilig hast.</p>
+    <button type="button" class="finale-btn" id="bigBtn" aria-label="Muffin zerbröseln">
+      <canvas class="mf finale-mf" id="finaleMf" data-muffin="streusel" data-size="520" role="img" aria-label="Fertiger Streuselmuffin"></canvas>
+      <span class="steam" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+
+    <dl class="facts">
+      <div><dt>Ofenkurve</dt><dd>200 → 175 °C</dd><p>hohe Anfangshitze für den Trieb, dann runter zum Durchbacken</p></div>
+      <div><dt>Füllhöhe</dt><dd>2 / 3</dd><p>darüber läuft der Teig über und klebt am Blech fest</p></div>
+      <div><dt>Rührzeit</dt><dd>10 s</dd><p>länger entwickelt Gluten — dann wird der Muffin zäh und tunnelig</p></div>
+      <div><dt>Kerntemperatur</dt><dd>96 °C</dd><p>fertig; das Stäbchen holt nur noch feuchte Krümel heraus</p></div>
+      <div><dt>Förmchen</dt><dd>50 ml</dd><p>Standardgröße, die Mulde im Blech fasst rund 70 ml</p></div>
+      <div><dt>Backpulver</dt><dd>2 TL</dd><p>auf 250 g Mehl; Natron allein braucht eine Säure wie Buttermilch</p></div>
+    </dl>
+
+    <p class="myth"><span>Faktencheck</span> Der englische Muffin und der amerikanische haben
+      außer dem Namen nichts gemeinsam: Der englische ist ein flacher Hefeteigfladen, der in der
+      Pfanne auf dem Blech gebacken und dann aufgerissen wird. Was hier auf der Seite steht,
+      ist durchweg der amerikanische — ein Rührteig, der nur so kurz wie möglich gerührt wird.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p><a href="../">← zurück zu 3D Models &amp; Drawings</a> &nbsp;·&nbsp; <a href="../bananen/">Krumme Dinger</a></p>
+  <p>&copy; 2026 <a href="https://github.com/spacecrafter29" target="_blank" rel="noopener">SpaceCrafter29</a>
+     und <a href="https://mschro67.github.io" target="_blank" rel="noopener">mschro67</a>. Alle Rechte vorbehalten.</p>
+  <p class="foot-fine">Alle Muffins auf dieser Seite sind gerechnet, nicht gebacken.</p>
+</footer>
+
+<script src="muffins.js"></script>
+</body>
+</html>
